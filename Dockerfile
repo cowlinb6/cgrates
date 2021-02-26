@@ -1,24 +1,37 @@
-FROM debian:10
+FROM debian:latest
 LABEL maintainer="ben.cowling@xarios.com"
+LABEL description="Runs CGRates in a Docker container"
 
-ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
-ENV GOROOT /root/go
-ENV GOPATH /root/code
+ENV LC_ALL C
 
-RUN echo "Installing... " \
-#
-# install golang
-&& apt update && apt install -y wget curl gnupg2 \
-&& wget -qO- https://golang.org/dl/go1.15.linux-amd64.tar.gz | tar xzf - -C /root/ \
-#
-# install cgrates
-&& wget -O - http://apt.cgrates.org/apt.cgrates.org.gpg.key | apt-key add - \
+# Timezone
+ENV TZ=${CONTAINER_TZ:-Europe/London}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Dependencies
+RUN apt-get -y update && apt-get -y install git 
+RUN apt-get -y update && apt-get -y install sudo 
+RUN apt-get -y update && apt-get -y install wget 
+RUN apt-get -y update && apt-get -y install nano 
+RUN apt-get -y update && apt-get -y install rsyslog 
+RUN apt-get -y update && apt-get -y install ngrep 
+RUN apt-get -y update && apt-get -y install curl 
+RUN apt-get -y update && apt-get -y install redis-server
+RUN apt-get -y update && apt-get -y install gnupg2
+
+# Mongo Db client
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 656408E390CFB1F5 \
+&& echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb.list \
+&& apt-get update && apt-get install -y mongodb-org-shell
+
+# CGRates
+RUN wget -O - http://apt.cgrates.org/apt.cgrates.org.gpg.key | apt-key add - \
 && echo "deb http://apt.cgrates.org/debian/ nightly main" | tee /etc/apt/sources.list.d/cgrates.list \
-&& apt-get update && apt-get install -y cgrates \
-#
-# cleanup
-&& apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+&& apt-get update && apt-get install -y cgrates
+
+# Cleanup
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY entrypoint.sh /opt/entrypoint.sh
 RUN chmod +x /opt/entrypoint.sh
@@ -26,4 +39,4 @@ RUN chmod +x /opt/entrypoint.sh
 EXPOSE 2012 
 
 # set start command
-ENTRYPOINT ["/opt/entrypoint.sh"]
+ENTRYPOINT ["/opt/entrypoint.sh"] 
