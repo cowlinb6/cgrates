@@ -13,5 +13,8 @@ service redis-server start
 # Set versions (if first time launch)
 /usr/bin/cgr-migrator -exec=*set_versions -config_path=/etc/cgrates
 
+# Start SSH
+/usr/sbin/sshd
+
 # Start 
 /usr/bin/cgr-engine -config_path=/etc/cgrates

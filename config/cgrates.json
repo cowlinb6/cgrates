@@ -1,0 +1,49 @@
+{      
+    "general": {
+        "log_level": 7,
+        "reply_timeout": "30s"
+    },
+       
+    "listen": {
+        "rpc_json": ":2012",
+        "rpc_gob": ":2013",
+        "http": ":2080"
+    },
+    
+    "data_db": {
+    	"db_type": "*mongo",
+    	"db_host": "bencgrates.mongo.cosmos.azure.com",
+    	"db_port": 10255,
+    	"db_name": "cgratesdata?ssl=true",
+    	"db_user": "bencgrates",
+    	"db_password": ""
+    },
+       
+    "stor_db": { 
+    	"db_type": "*mongo",
+    	"db_host": "bencgrates.mongo.cosmos.azure.com",
+    	"db_port": 10255,
+    	"db_name": "cgratesstor?ssl=true",
+    	"db_user": "bencgrates",
+    	"db_password": "",
+        "max_open_conns": 100,
+        "max_idle_conns": 10,
+        "cdrs_indexes": []
+    },
+
+    "cdrs": {
+        "enabled": true
+    },
+
+    "apiers": {
+     	"enabled": true
+    },
+
+    "schedulers": {
+        "enabled": true
+    },
+
+    "rals": {
+        "enabled": true
+    }
+}
